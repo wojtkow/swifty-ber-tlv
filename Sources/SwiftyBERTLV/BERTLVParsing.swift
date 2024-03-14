@@ -9,15 +9,15 @@ import Foundation
 
 extension BERTLV {
     
-    public static func parse(hexString: String) throws -> [BERTLV] {
+    public static func parse(hexString: String, skipIsConstructed: Bool = false) throws -> [BERTLV] {
         guard let bytes = [UInt8](hexString: hexString) else {
             throw BERTLVError.failedToParseHexString
         }
         
-        return try parse(bytes: bytes)
+		return try parse(bytes: bytes, skipIsConstructed: skipIsConstructed)
     }
     
-    public static func parse(bytes: [UInt8]) throws -> [BERTLV] {
+	public static func parse(bytes: [UInt8], skipIsConstructed: Bool = false) throws -> [BERTLV] {
         var tags: [BERTLV] = []
         var bytes = bytes
         
@@ -49,7 +49,7 @@ extension BERTLV {
                     tag: type,
                     lengthBytes: lengthBytes,
                     value: value,
-                    isConstructed: isConstructed
+					isConstructed: skipIsConstructed ? false : isConstructed
                 )
                 tags.append(tag)
                 bytes = Array(bytes.dropFirst(typeLength + lengthLength + length))
